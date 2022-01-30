@@ -2,6 +2,7 @@ package com.example.nurd_task.view
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -27,46 +28,65 @@ import retrofit2.converter.gson.GsonConverterFactory
 class MainActivity : AppCompatActivity(), RecyclerViewAdapter.Listener {
     private var devicesModel: ArrayList<Device>? = null
     private var recyclerViewAdapter: RecyclerViewAdapter? = null
+    lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        sharedPreferences = this.getSharedPreferences("com.example.nurd_task.view", MODE_PRIVATE)
         val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)
         reacyclerView.layoutManager = layoutManager
+    }
 
+    override fun onStart() {
+        super.onStart()
         loadData()
     }
 
 
     private fun loadData() {
-        val retrofit = Retrofit.Builder().baseUrl(Constants.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create()).build()
-        val service = retrofit.create(DevicesAPI::class.java)
-        val call = service.getDadata()
+        try {
+            val retrofit = Retrofit.Builder().baseUrl(Constants.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create()).build()
+            val service = retrofit.create(DevicesAPI::class.java)
+            val call = service.getDadata()
 
-        call.enqueue(object : Callback<DevicesModel> {
-            override fun onResponse(call: Call<DevicesModel>, response: Response<DevicesModel>) {
-                if (response.isSuccessful) {
-                    progressbar.visibility = View.GONE
-                    response.body()?.let {
-                        devicesModel = ArrayList(it.Devices)
-                        recyclerViewAdapter = RecyclerViewAdapter(it, this@MainActivity)
-                        reacyclerView.adapter = recyclerViewAdapter
+            call.enqueue(object : Callback<DevicesModel> {
+                override fun onResponse(
+                    call: Call<DevicesModel>,
+                    response: Response<DevicesModel>
+                ) {
+                    if (response.isSuccessful) {
+                        progressbar.visibility = View.GONE
+                        response.body()?.let {
+                            devicesModel = ArrayList(it.Devices)
+                            recyclerViewAdapter =
+                                RecyclerViewAdapter(it, this@MainActivity, sharedPreferences)
+                            reacyclerView.adapter = recyclerViewAdapter
+                        }
                     }
                 }
-            }
 
-            override fun onFailure(call: Call<DevicesModel>, t: Throwable) {
-                t.printStackTrace()
-            }
+                override fun onFailure(call: Call<DevicesModel>, t: Throwable) {
+                    t.printStackTrace()
+                }
 
-        })
+            })
+        } catch (e: Throwable) {
+            Toast.makeText(
+                applicationContext,
+                "There was a problem, please try again later..",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+
     }
 
     override fun onItemClick(device: Device, position: Int) {
         val intent = Intent(this@MainActivity, DetailActivity::class.java)
         intent.putExtra("device", device)
+        intent.putExtra("position", position)
         startActivity(intent)
     }
 
@@ -78,11 +98,8 @@ class MainActivity : AppCompatActivity(), RecyclerViewAdapter.Listener {
         builder.setPositiveButton("Yes") { _, _ ->
             devicesModel!!.remove(device)
             recyclerViewAdapter!!.notifyItemRemoved(position)
-            Toast.makeText(applicationContext, "Yes : ${devicesModel?.size}", Toast.LENGTH_LONG)
-                .show()
         }
         builder.setNegativeButton("No") { _, _ ->
-            Toast.makeText(applicationContext, "No", Toast.LENGTH_LONG).show()
         }
         builder.show()
 
@@ -91,6 +108,7 @@ class MainActivity : AppCompatActivity(), RecyclerViewAdapter.Listener {
     override fun onEditItemClick(device: Device, position: Int) {
         val intent = Intent(this@MainActivity, DetailActivity::class.java)
         intent.putExtra("device", device)
+        intent.putExtra("position", position)
         intent.putExtra("editable", true)
         startActivity(intent)
     }

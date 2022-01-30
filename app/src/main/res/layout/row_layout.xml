@@ -53,13 +53,13 @@
             <ImageView
                 android:id="@+id/icon_editable"
                 android:layout_width="wrap_content"
-                android:layout_height="33dp"
+                android:layout_height="43dp"
                 android:layout_gravity="center"
                 android:background="@drawable/edit_icon"
                 app:tint="@color/grey" />
 
             <Space
-                android:layout_width="35dp"
+                android:layout_width="17dp"
                 android:layout_height="25dp"
                 android:layout_gravity="center" />
 

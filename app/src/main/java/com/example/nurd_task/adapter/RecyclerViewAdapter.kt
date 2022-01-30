@@ -1,6 +1,7 @@
 package com.example.nurd_task.adapter
 
 import android.annotation.SuppressLint
+import android.content.SharedPreferences
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +11,11 @@ import com.example.nurd_task.models.Device
 import com.example.nurd_task.models.DevicesModel
 import kotlinx.android.synthetic.main.row_layout.view.*
 
-class RecyclerViewAdapter(private val deviceList: DevicesModel, private val listener: Listener) :
+class RecyclerViewAdapter(
+    private val deviceList: DevicesModel,
+    private val listener: Listener,
+    private val sharedPreferences: SharedPreferences
+) :
     RecyclerView.Adapter<RecyclerViewAdapter.RowHolder>() {
 
     interface Listener {
@@ -19,10 +24,15 @@ class RecyclerViewAdapter(private val deviceList: DevicesModel, private val list
         fun onEditItemClick(device: Device, position: Int)
     }
 
-
     class RowHolder(view: View) : RecyclerView.ViewHolder(view) {
+
         @SuppressLint("SetTextI18n")
-        fun bind(device: Device, listener: Listener, position: Int) {
+        fun bind(
+            device: Device,
+            listener: Listener,
+            position: Int,
+            sharedPreferences: SharedPreferences
+        ) {
             itemView.setOnClickListener {
                 listener.onItemClick(device, position)
             }
@@ -33,9 +43,14 @@ class RecyclerViewAdapter(private val deviceList: DevicesModel, private val list
             itemView.icon_editable.setOnClickListener {
                 listener.onEditItemClick(device, position)
             }
-            var rowPosition = position
-            rowPosition++
-            itemView.txtHomeNumber.text = "Home Number $rowPosition"
+
+            val customTitle = sharedPreferences.getString(device.MacAddress, "")
+            if (customTitle != "") {
+                itemView.txtHomeNumber.text = customTitle
+            } else {
+                itemView.txtHomeNumber.text = "Home Number ${position + 1}"
+            }
+
             itemView.txtSN.text = "SN : ${device.PK_Device}"
 
             if (device.Platform == "Sercomm G450") {
@@ -54,7 +69,7 @@ class RecyclerViewAdapter(private val deviceList: DevicesModel, private val list
     }
 
     override fun onBindViewHolder(holder: RowHolder, position: Int) {
-        holder.bind(deviceList.Devices[position], listener, position)
+        holder.bind(deviceList.Devices[position], listener, position, sharedPreferences)
     }
 
     override fun getItemCount(): Int {
