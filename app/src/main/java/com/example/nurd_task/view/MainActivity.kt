@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.compose.ui.tooling.preview.Devices
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.nurd_task.R
@@ -24,6 +23,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(), RecyclerViewAdapter.Listener {
     private var devicesModel: ArrayList<Device>? = null
@@ -44,25 +45,23 @@ class MainActivity : AppCompatActivity(), RecyclerViewAdapter.Listener {
         loadData()
     }
 
-
     private fun loadData() {
         try {
-            val retrofit = Retrofit.Builder().baseUrl(Constants.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create()).build()
+            val retrofit = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build()
             val service = retrofit.create(DevicesAPI::class.java)
             val call = service.getDadata()
 
             call.enqueue(object : Callback<DevicesModel> {
-                override fun onResponse(
-                    call: Call<DevicesModel>,
-                    response: Response<DevicesModel>
-                ) {
+                override fun onResponse(call: Call<DevicesModel>,response: Response<DevicesModel>) {
                     if (response.isSuccessful) {
                         progressbar.visibility = View.GONE
                         response.body()?.let {
-                            devicesModel = ArrayList(it.Devices)
-                            recyclerViewAdapter =
-                                RecyclerViewAdapter(it, this@MainActivity, sharedPreferences)
+                            devicesModel = ArrayList(it.Devices.sortedBy { it.PK_Device })
+                            recyclerViewAdapter = RecyclerViewAdapter(
+                                devicesModel!!,
+                                this@MainActivity,
+                                sharedPreferences
+                            )
                             reacyclerView.adapter = recyclerViewAdapter
                         }
                     }
@@ -93,11 +92,10 @@ class MainActivity : AppCompatActivity(), RecyclerViewAdapter.Listener {
     @SuppressLint("NotifyDataSetChanged")
     override fun onItemLongClick(device: Device, position: Int) {
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("Delete...")
+        builder.setTitle("Delete... ")
         builder.setMessage("Are you sure?")
         builder.setPositiveButton("Yes") { _, _ ->
-            devicesModel!!.remove(device)
-            recyclerViewAdapter!!.notifyItemRemoved(position)
+            removeItem(device, position)
         }
         builder.setNegativeButton("No") { _, _ ->
         }
@@ -111,5 +109,11 @@ class MainActivity : AppCompatActivity(), RecyclerViewAdapter.Listener {
         intent.putExtra("position", position)
         intent.putExtra("editable", true)
         startActivity(intent)
+    }
+
+    private fun removeItem(device: Device, position: Int) {
+        devicesModel!!.remove(device)
+        recyclerViewAdapter!!.notifyItemRemoved(position)
+        recyclerViewAdapter!!.notifyItemRangeChanged(position, devicesModel!!.size)
     }
 }

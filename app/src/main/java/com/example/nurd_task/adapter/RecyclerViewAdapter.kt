@@ -8,11 +8,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.nurd_task.R
 import com.example.nurd_task.models.Device
-import com.example.nurd_task.models.DevicesModel
 import kotlinx.android.synthetic.main.row_layout.view.*
 
 class RecyclerViewAdapter(
-    private val deviceList: DevicesModel,
+    private val deviceList: ArrayList<Device>,
     private val listener: Listener,
     private val sharedPreferences: SharedPreferences
 ) :
@@ -69,11 +68,11 @@ class RecyclerViewAdapter(
     }
 
     override fun onBindViewHolder(holder: RowHolder, position: Int) {
-        holder.bind(deviceList.Devices[position], listener, position, sharedPreferences)
+        holder.bind(deviceList[position], listener, position, sharedPreferences)
     }
 
     override fun getItemCount(): Int {
-        return deviceList.Devices.size
+        return deviceList.size
     }
 
 }

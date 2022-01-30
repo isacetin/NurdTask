@@ -45,7 +45,6 @@ class DetailActivity : AppCompatActivity() {
 
         txtHomeNumber2.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-
                 sharedPreferences.edit().putString(device.MacAddress, txtHomeNumber2.text.toString()).apply()
             }
             false
