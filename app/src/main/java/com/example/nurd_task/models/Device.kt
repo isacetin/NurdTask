@@ -1,5 +1,7 @@
 package com.example.nurd_task.models
 
+import java.io.Serializable
+
 
 data class Device(
     val Firmware: String,
@@ -14,4 +16,4 @@ data class Device(
     val Server_Account: String,
     val Server_Device: String,
     val Server_Event: String
-)
+) : Serializable

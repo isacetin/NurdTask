@@ -13,7 +13,7 @@
         android:weightSum="6">
 
         <ImageView
-            android:id="@+id/img"
+            android:id="@+id/imgRow"
             android:layout_width="55dp"
             android:layout_height="55dp"
             android:layout_weight="1"
@@ -23,6 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginLeft="15dp"
             android:layout_weight="4"
             android:orientation="vertical">
 
@@ -30,7 +31,9 @@
                 android:id="@+id/txtHomeNumber"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/home_number" />
+                android:text="@string/home_number"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/txtSN"
@@ -44,12 +47,26 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/icon_editable"
+                android:layout_width="wrap_content"
+                android:layout_height="33dp"
+                android:layout_gravity="center"
+                android:background="@drawable/edit_icon"
+                app:tint="@color/grey" />
+
+            <Space
+                android:layout_width="35dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center" />
 
             <ImageView
                 android:layout_width="25dp"
-                android:layout_gravity="center"
                 android:layout_height="25dp"
+                android:layout_gravity="center"
                 android:background="@drawable/pngwing"
                 app:tint="@color/grey" />
         </LinearLayout>

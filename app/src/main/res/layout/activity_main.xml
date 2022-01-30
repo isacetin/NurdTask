@@ -9,35 +9,45 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:background="@color/grey"
-        android:layout_height="300dp"
-        android:orientation="vertical"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:gravity="center">
+        android:background="@color/grey"
+        android:gravity="center"
+        android:orientation="vertical">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imgAvatar"
             android:layout_width="250dp"
-            android:layout_height="200dp"
-            android:src="@drawable/ic_launcher_background" />
+            android:layout_height="150dp"
+            android:layout_margin="7dp"
+            android:src="@drawable/profil" />
 
         <TextView
             android:id="@+id/txtName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
+            android:layout_margin="7dp"
             android:gravity="center"
+            android:text="Jhon Wayne"
             android:textSize="34sp"
             android:textStyle="bold"
-            android:visibility="visible"
-            android:text="Jhon Wayne" />
+            android:visibility="visible" />
 
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/reacyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:context="com.google.samples.apps.sunflower.GardenActivity" />
 
 
 </LinearLayout>

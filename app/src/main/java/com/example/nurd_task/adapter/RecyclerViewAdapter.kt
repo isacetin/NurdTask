@@ -1,5 +1,6 @@
 package com.example.nurd_task.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,16 +14,37 @@ class RecyclerViewAdapter(private val deviceList: DevicesModel, private val list
     RecyclerView.Adapter<RecyclerViewAdapter.RowHolder>() {
 
     interface Listener {
-        fun onItemClick(device: Device)
+        fun onItemClick(device: Device, position: Int)
+        fun onItemLongClick(device: Device, position: Int)
+        fun onEditItemClick(device: Device, position: Int)
     }
 
+
     class RowHolder(view: View) : RecyclerView.ViewHolder(view) {
-        fun bind(device: Device, listener: Listener) {
+        @SuppressLint("SetTextI18n")
+        fun bind(device: Device, listener: Listener, position: Int) {
             itemView.setOnClickListener {
-                listener.onItemClick(device)
+                listener.onItemClick(device, position)
             }
-            itemView.txtHomeNumber.text = device.PK_Device.toString()
-            itemView.txtSN.text = device.Server_Device
+            itemView.setOnLongClickListener {
+                listener.onItemLongClick(device, position)
+                true
+            }
+            itemView.icon_editable.setOnClickListener {
+                listener.onEditItemClick(device, position)
+            }
+            var rowPosition = position
+            rowPosition++
+            itemView.txtHomeNumber.text = "Home Number $rowPosition"
+            itemView.txtSN.text = "SN : ${device.PK_Device}"
+
+            if (device.Platform == "Sercomm G450") {
+                itemView.imgRow.setImageResource(R.drawable.vera_plus_big)
+            } else if (device.Platform == "Sercomm G550") {
+                itemView.imgRow.setImageResource(R.drawable.vera_secure_big)
+            } else if (device.Platform == "MiCasaVerde VeraLite" || device.Platform == "Sercomm NA900" || device.Platform == "Sercomm NA301" || device.Platform == "Sercomm NA930" || device.Platform == "") {
+                itemView.imgRow.setImageResource(R.drawable.vera_edge_big)
+            }
         }
     }
 
@@ -32,10 +54,11 @@ class RecyclerViewAdapter(private val deviceList: DevicesModel, private val list
     }
 
     override fun onBindViewHolder(holder: RowHolder, position: Int) {
-        holder.bind(deviceList.Devices[position],listener)
+        holder.bind(deviceList.Devices[position], listener, position)
     }
 
     override fun getItemCount(): Int {
         return deviceList.Devices.size
     }
+
 }
